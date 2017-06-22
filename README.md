@@ -1,2 +1,3 @@
-#Asp.net core web training application
+# Asp.net core web training application
+
 Training lab solution
