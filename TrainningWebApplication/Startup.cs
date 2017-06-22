@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using TrainningData;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace TrainningWebApplication
 {
@@ -27,8 +31,16 @@ namespace TrainningWebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            services.AddMvc();
+			services.AddMemoryCache();
+			services.AddSession();
+			services.AddAuthorization(options =>
+			{
+				options.AddPolicy("AdminsOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"));
+			});
+			services.AddDbContext<DataContext>(
+				options => options.UseSqlServer(Configuration.GetConnectionString("MyConnection")));
+			// Add framework services.
+			services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,7 +48,7 @@ namespace TrainningWebApplication
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+			app.UseStatusCodePagesWithReExecute("/error/{0}");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -48,7 +60,13 @@ namespace TrainningWebApplication
             }
 
             app.UseStaticFiles();
-
+			app.UseSession();
+			app.UseCookieAuthentication(new CookieAuthenticationOptions()
+			{
+				LoginPath = new PathString("/Auth/Login"),
+				AccessDeniedPath = new PathString("/Auth/Forbidden"),
+				AutomaticChallenge = true
+			});
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

@@ -1,0 +1,13 @@
+
+@model string
+@{
+    ViewData["Title"] = "_AddedToCart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<div id="message" class="alert alert-success" role="alert">@Model</div>
+<p>
+	<a asp-controller="Home" asp-action="Index">Continue Shopping</a>
+</p>
+
