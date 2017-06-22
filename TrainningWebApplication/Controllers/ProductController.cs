@@ -55,6 +55,36 @@ namespace TrainningWebApplication.Controllers
 			return PartialView("_AddedToCart", message);
 		}
 
+		[HttpGet("api/product")]
+		public IActionResult Get()
+		{
+			var products = datacontext.Products.ToList();
+			return new ObjectResult(products);
+		}
+
+		[HttpGet("api/product/{id:int}")]
+		public IActionResult Get(int id)
+		{
+			var product = datacontext.Products.FirstOrDefault(p => p.Id == id);
+			if (product == null) return NotFound();
+			return new ObjectResult(product);
+		}
+
+		public IActionResult Put(int id, [FromBody]Product product)
+		{
+			if (product == null || product.Id != id)
+			{
+				return BadRequest();
+			}
+			var existing = datacontext.Products.FirstOrDefault(p => p.Id == id);
+			if (existing == null) return NotFound();
+			existing.ProductName = product.ProductName;
+			existing.UnitPrice = product.UnitPrice;
+			existing.Package = product.Package;
+			datacontext.SaveChanges();
+			return new NoContentResult();
+		}
+
     }
 
 	public class ProductList : ViewComponent
