@@ -1,2 +1,2 @@
-# TrainningWebApplication
-Asp.net core mvc training
+#Asp.net core web training application
+Training lab solution
