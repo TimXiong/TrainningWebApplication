@@ -1,3 +1,3 @@
 # Asp.net core web training application
 
-Training lab solution
+This is my .net core training lab solution 
